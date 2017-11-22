@@ -111,11 +111,6 @@ class LoginActivity : ParentAppCompatActivity() {
                     personID, personPhotoURL)
 
             moveToWelcomeScreen()
-
-//            txtName.text = mSharedPreference.userGoogleAccountName
-//            txtEmail.text = mSharedPreference.userGoogleAccountEmailAddress
-//
-//            Glide.with(mContext).load(personPhotoURL).into(imgProfilePic)
             updateUI(true)
 
         } else {
