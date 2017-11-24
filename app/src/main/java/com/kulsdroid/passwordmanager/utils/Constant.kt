@@ -12,3 +12,8 @@ val PREFS_EMAIL = "_userEmail"
 val PREFS_PICTURE_URL = "_userProfilePicture"
 val PREFS_AUTH_TOKEN = "_authToken"
 val PREFS_USER_ID = "_userId"
+val PREFS_FIREBASE_USER_ID = "_firebaseUserId"
+
+
+//******* Firebase Realtime Database keys ********//
+val KEY_USERS = "users"

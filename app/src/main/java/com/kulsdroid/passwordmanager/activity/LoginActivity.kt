@@ -2,6 +2,7 @@ package com.kulsdroid.passwordmanager.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -9,10 +10,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.tasks.Task
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.kulsdroid.passwordmanager.R
+import com.kulsdroid.passwordmanager.UserInfo
 import com.kulsdroid.passwordmanager.application.AppController
 import com.kulsdroid.passwordmanager.application.MyApplication
+import com.kulsdroid.passwordmanager.utils.KEY_USERS
+import com.kulsdroid.passwordmanager.utils.showToast
 import kotlinx.android.synthetic.main.activity_login.*
+
 
 /**
  * Created by KulsDroid on 11/22/2017.
@@ -101,16 +110,16 @@ class LoginActivity : ParentAppCompatActivity() {
 
         if (mGoogleSignInAccount != null) {
 
-            var personName: String = mGoogleSignInAccount.displayName.toString()
-            var personPhotoURL: String = mGoogleSignInAccount.photoUrl.toString()
-            var personEmail: String = mGoogleSignInAccount.email.toString();
-            var personIdToken: String = mGoogleSignInAccount.idToken.toString()
-            var personID: String = mGoogleSignInAccount.id.toString()
+            var userInfo: UserInfo? = UserInfo()
 
-            mSharedPreference.storeGoogleCredentials(personName, personEmail, personIdToken,
-                    personID, personPhotoURL)
+            userInfo!!.name = mGoogleSignInAccount.displayName.toString()
+            userInfo!!.profilePicture = mGoogleSignInAccount.photoUrl.toString()
+            userInfo!!.emailAddress = mGoogleSignInAccount.email.toString();
+            userInfo!!.authToken = mGoogleSignInAccount.idToken.toString()
+            userInfo!!.id = mGoogleSignInAccount.id.toString()
 
-            moveToWelcomeScreen()
+            storeUserDataIntoFirebase(userInfo)
+
             updateUI(true)
 
         } else {
@@ -122,5 +131,45 @@ class LoginActivity : ParentAppCompatActivity() {
     private fun moveToWelcomeScreen() {
         val mIntent = Intent(mContext, WelcomeUserActivity::class.java)
         startActivity(mIntent)
+    }
+
+    private fun getDeviceInformation() {
+
+
+    }
+
+    lateinit var mDatabaseReference: DatabaseReference
+    lateinit var mFirebaseUserID: String
+
+    private fun storeUserDataIntoFirebase(userInfo: UserInfo) {
+
+        mDatabaseReference = MyApplication.mFirebaseDatabase!!.getReference(KEY_USERS)
+
+        mFirebaseUserID = mDatabaseReference.push().key
+        mDatabaseReference.setValue(userInfo)
+
+        mDatabaseReference.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+                Log.e(TAG,"Error >> " + p0.toString())
+                showToast("onCancelled")
+            }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                var mUserInfo: UserInfo? = dataSnapshot!!.getValue(UserInfo::class.java)
+
+                mSharedPreference.storeGoogleCredentials(
+                        mUserInfo!!.name!!, mUserInfo!!.emailAddress!!, mUserInfo!!.authToken!!,
+                        mUserInfo!!.id!!, mUserInfo!!.profilePicture!!, mFirebaseUserID!!)
+
+                showToast("Data saved!")
+                moveToWelcomeScreen()
+            }
+
+        });
+
+//        mSharedPreference.storeGoogleCredentials(personName, personEmail, personIdToken,
+//                personID, personPhotoURL)
+//        moveToWelcomeScreen()
+
     }
 }

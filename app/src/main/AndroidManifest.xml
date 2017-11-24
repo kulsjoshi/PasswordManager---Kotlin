@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.kulsdroid.passwordmanager">
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
     <application
         android:name=".application.MyApplication"
         android:allowBackup="true"
@@ -30,6 +32,10 @@
         <activity
             android:name=".activity.WelcomeUserActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
     </application>
 

@@ -27,13 +27,15 @@ class SharedPreferenceManager() {
                                userEmail: String,
                                userAuthToken: String,
                                userId: String,
-                               userProfilePicture: String) {
+                               userProfilePicture: String,
+                               userFirebaseId: String) {
 
         userGoogleAccountName = userName
         userGoogleAccountEmailAddress = userEmail
         userGoogleAccountAuthToken = userAuthToken
         userGoogleAccountID = userId
         userGoogleAccountProfilePicture = userProfilePicture
+        userFirebaseID = userFirebaseId
 
     }
 
@@ -56,4 +58,8 @@ class SharedPreferenceManager() {
     var userGoogleAccountProfilePicture: String
         get() = getString(PREFS_PICTURE_URL)
         set(value) = addString(PREFS_PICTURE_URL, value)
+
+    var userFirebaseID: String
+        get() = getString(PREFS_FIREBASE_USER_ID)
+        set(value) = addString(PREFS_FIREBASE_USER_ID, value)
 }
